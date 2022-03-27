@@ -4,9 +4,10 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import json
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 number_of_teams = 17
-
 
 def create_team_name_json_map(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -21,6 +22,18 @@ def create_team_name_json_map(name):
         idx += 1
 
     print(dick)
+
+
+def create_list_of_teams():
+    # Use a breakpoint in the code line below to debug your script.
+    f = open('races/bahrain/bahrain.json')
+    d = json.load(f)
+    teams = d['leaderboard']['leaderboard_entrants']
+    dick = []
+    for team in teams:
+        dick.append(team['team_name'])
+
+    return dick
 
 
 def create_score_mapping():
@@ -74,8 +87,41 @@ if __name__ == '__main__':
     team_mapping = json.load(team_mapping_json)
     race_scores = create_score_mapping()
     write_scores_to_file()
-
+    teams_list = create_list_of_teams()
+    print(teams_list)
     da_scores = get_total_from_races_json()
     print(da_scores)
+    # d = {"col": da_scores}
+
+    df = pd.DataFrame({'scores': da_scores, 'teams': teams_list})
+    x_pos = [i for i, _ in enumerate(teams_list)]
+
+    colors = ['#B0171F',
+              '#EEA2AD',
+              '#B452CD',
+              '#0000FF',
+              '#C6E2FF',
+              '#00C5CD',
+              '#00FA9A',
+              '#00EE00',
+              '#CDCD00',
+              '#EEB422',
+              '#B3B3B3',
+              '#050505',
+              '#C67171',
+              '#9C661F',
+              '#8B8989',
+              '#F5F5DC',
+              '#9A32CD']
+
+    plt.figure(figsize=(20, 10))
+    plt.barh(x_pos, da_scores[::-1], color=colors)
+
+    plt.ylabel("team names")
+    plt.xlabel("scores")
+    plt.title("Bahrain")
+    plt.yticks(x_pos, teams_list[::-1])
+    plt.savefig("test")
+    plt.show()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
